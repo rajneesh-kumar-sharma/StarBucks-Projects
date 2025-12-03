@@ -15,7 +15,7 @@ pipeline{
         }
         stage('Checkout from Git'){
             steps{
-                git branch: 'master', credentialsId: 'github-token', url: 'https://github.com/rajneesh-kumar-sharma/StarBucks-Projects.git'
+                git branch: 'master', url: 'https://github.com/rajneesh-kumar-sharma/StarBucks-Projects.git'
             }
         }
         stage("Sonarqube Analysis "){
