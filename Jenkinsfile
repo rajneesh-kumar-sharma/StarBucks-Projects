@@ -36,11 +36,7 @@ pipeline{
                 }
             }
         }
-        stage("TRIVY"){
-            steps{
-                sh "trivy image coolrajnish/starbucks:latest > trivyimage.txt" 
-            }
-        }
+        
         stage('App Deploy to Docker container'){
             steps{
                 sh 'docker run -d --name starbucks -p 3000:3000 coolrajnish/starbucks:latest'
