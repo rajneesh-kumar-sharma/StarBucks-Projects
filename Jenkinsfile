@@ -18,13 +18,32 @@ pipeline{
                 git branch: 'master', url: 'https://github.com/rajneesh-kumar-sharma/StarBucks-Projects.git'
             }
         }
-        
+        stage("Sonarqube Analysis "){
+            steps{
+                withSonarQubeEnv('sonar-server') {
+                    sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=starbucks \
+                    -Dsonar.projectKey=starbucks '''
+                }
+            }
+        }
+        stage("quality gate"){
+           steps {
+                script {
+                    waitForQualityGate abortPipeline: false, credentialsId: 'Sonar-token' 
+                }
+            } 
+        }
         stage('Install Dependencies') {
             steps {
-                sh "npm install"                
+                sh "npm install"
+                sh "npm audit fix --force"
             }
         }        
-        /*
+        stage('TRIVY FS SCAN') {
+            steps {
+                sh "trivy fs . > trivyfs.txt"
+            }
+        }
         stage("Docker Build & Push"){
             steps{
                 steps{
@@ -34,15 +53,19 @@ pipeline{
                 sh "docker tag ${env.DOCKERHUB_USERNAME}/starbucks ${env.DOCKERHUB_USERNAME}/starbucks:latest"
                 sh "docker push ${env.DOCKERHUB_USERNAME}/starbucks:latest"
                 }
-            }
+                }
             }
         }
-        
+        stage("TRIVY"){
+            steps{
+                sh "trivy image coolrajnish/starbucks:latest > trivyimage.txt" 
+            }
+        }
         stage('App Deploy to Docker container'){
             steps{
                 sh 'docker run -d --name starbucks -p 3000:3000 coolrajnish/starbucks:latest'
             }
-        }*/
+        }
 
     }
     post {
