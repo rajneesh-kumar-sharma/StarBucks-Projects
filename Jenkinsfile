@@ -24,7 +24,7 @@ pipeline{
                 sh "npm install"                
             }
         }        
-        
+        /*
         stage("Docker Build & Push"){
             steps{
                 steps{
@@ -42,7 +42,7 @@ pipeline{
             steps{
                 sh 'docker run -d --name starbucks -p 3000:3000 coolrajnish/starbucks:latest'
             }
-        }
+        }*/
 
     }
     post {
