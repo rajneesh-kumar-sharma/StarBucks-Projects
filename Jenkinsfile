@@ -27,13 +27,14 @@ pipeline{
         
         stage("Docker Build & Push"){
             steps{
-                script{
-                   withDockerRegistry(credentialsId: 'docker', toolName: 'docker'){   
-                       sh "docker build -t starbucks ."
-                       sh "docker tag starbucks coolrajnish/starbucks:latest "
-                       sh "docker push coolrajnish/starbucks:latest "
-                    }
+                steps{
+                withCredentials([usernamePassword(credentialsId:"dockerHub",passwordVariable:"DOCKERHUB_PASSWORD",usernameVariable:"DOCKERHUB_USERNAME")]){
+                sh "docker build -t ${env.DOCKERHUB_USERNAME}/starbucks ."
+                sh "docker login -u ${env.DOCKERHUB_USERNAME} -p ${env.DOCKERHUB_PASSWORD}"
+                sh "docker tag ${env.DOCKERHUB_USERNAME}/starbucks ${env.DOCKERHUB_USERNAME}/starbucks:latest"
+                sh "docker push ${env.DOCKERHUB_USERNAME}/starbucks:latest"
                 }
+            }
             }
         }
         
